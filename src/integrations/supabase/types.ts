@@ -14,10 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
+      companies: {
+        Row: {
+          access_code: string
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          access_code: string
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          access_code?: string
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       employees: {
         Row: {
           access_code: string
           active: boolean
+          company_id: string | null
           created_at: string
           first_name: string
           id: string
@@ -27,6 +52,7 @@ export type Database = {
         Insert: {
           access_code: string
           active?: boolean
+          company_id?: string | null
           created_at?: string
           first_name: string
           id?: string
@@ -36,17 +62,27 @@ export type Database = {
         Update: {
           access_code?: string
           active?: boolean
+          company_id?: string | null
           created_at?: string
           first_name?: string
           id?: string
           last_name?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "employees_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       projects: {
         Row: {
           address: string | null
+          company_id: string | null
           created_at: string
           id: string
           name: string
@@ -54,6 +90,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          company_id?: string | null
           created_at?: string
           id?: string
           name: string
@@ -61,12 +98,21 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          company_id?: string | null
           created_at?: string
           id?: string
           name?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "projects_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       time_entries: {
         Row: {
