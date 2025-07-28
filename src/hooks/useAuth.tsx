@@ -46,20 +46,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Fetch user role and employee data
           setTimeout(async () => {
             try {
-              const { data: roleData } = await supabase
+              console.log("Fetching user role for user:", session.user.id);
+              const { data: roleData, error: roleError } = await supabase
                 .from("user_roles")
                 .select("role, employee_id, employees(*)")
                 .eq("user_id", session.user.id)
                 .single();
 
+              console.log("Role data:", roleData, "Error:", roleError);
+
               if (roleData) {
                 setUserRole(roleData.role);
                 if (roleData.role === "employee" && roleData.employees) {
+                  console.log("Setting employee data:", roleData.employees);
                   setEmployeeData(roleData.employees);
                 }
+              } else {
+                console.log("No role data found, treating as employee");
+                // Si pas de rôle trouvé, on essaie de récupérer directement l'employé
+                // basé sur l'ID utilisateur ou une autre méthode
+                setUserRole("employee");
               }
             } catch (error) {
               console.error("Error fetching user role:", error);
+              // En cas d'erreur, on assume que c'est un employé
+              setUserRole("employee");
             }
           }, 0);
         } else {
@@ -79,20 +90,59 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session?.user) {
         setTimeout(async () => {
           try {
-            const { data: roleData } = await supabase
+            console.log("Getting session - fetching role for user:", session.user.id);
+            const { data: roleData, error: roleError } = await supabase
               .from("user_roles")
               .select("role, employee_id, employees(*)")
               .eq("user_id", session.user.id)
               .single();
 
+            console.log("Session role data:", roleData, "Error:", roleError);
+
             if (roleData) {
               setUserRole(roleData.role);
               if (roleData.role === "employee" && roleData.employees) {
+                console.log("Setting employee data from session:", roleData.employees);
                 setEmployeeData(roleData.employees);
+              }
+            } else {
+              // Si pas de rôle dans user_roles, essayer de récupérer depuis localStorage
+              const employeeId = localStorage.getItem('currentEmployeeId');
+              if (employeeId) {
+                console.log("Fetching employee data from localStorage ID:", employeeId);
+                const { data: employee } = await supabase
+                  .from("employees")
+                  .select("*")
+                  .eq("id", employeeId)
+                  .single();
+                
+                if (employee) {
+                  console.log("Found employee data:", employee);
+                  setUserRole("employee");
+                  setEmployeeData(employee);
+                }
               }
             }
           } catch (error) {
-            console.error("Error fetching user role:", error);
+            console.error("Error fetching user role from session:", error);
+            // Fallback : essayer localStorage
+            const employeeId = localStorage.getItem('currentEmployeeId');
+            if (employeeId) {
+              try {
+                const { data: employee } = await supabase
+                  .from("employees")
+                  .select("*")
+                  .eq("id", employeeId)
+                  .single();
+                
+                if (employee) {
+                  setUserRole("employee");
+                  setEmployeeData(employee);
+                }
+              } catch (fallbackError) {
+                console.error("Fallback error:", fallbackError);
+              }
+            }
           }
           setLoading(false);
         }, 0);

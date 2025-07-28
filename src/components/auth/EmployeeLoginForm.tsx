@@ -76,12 +76,15 @@ export function EmployeeLoginForm() {
         // On continue même en cas d'erreur
       }
 
+      // Stocker l'ID de l'employé pour récupération ultérieure
+      localStorage.setItem('currentEmployeeId', employee.id);
+
       toast({
         title: "Connexion réussie",
         description: `Bienvenue ${employee.first_name} ${employee.last_name}!`,
       });
 
-      // Redirection vers la page principale
+      // Redirection vers la page principale - elle redirigera vers /employee
       window.location.href = "/";
     } catch (error) {
       toast({
