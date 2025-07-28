@@ -68,7 +68,7 @@ export function EmployeeLoginForm() {
       if (roleError) {
         toast({
           title: "Erreur",
-          description: "Erreur lors de la création du rôle",
+          description: roleError.message || "Erreur lors de la création du rôle",
           variant: "destructive",
         });
         return;
