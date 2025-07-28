@@ -3,7 +3,7 @@ import { AuthPage } from "@/components/auth/AuthPage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Clock, BarChart3, LogOut } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 
 const Index = () => {
   const { user, loading, userRole, employeeData, signOut } = useAuth();
@@ -18,6 +18,14 @@ const Index = () => {
 
   if (!user) {
     return <AuthPage />;
+  }
+
+  if (userRole === "employee") {
+    return <Navigate to="/employee" replace />;
+  }
+
+  if (userRole === "admin") {
+    return <Navigate to="/admin/dashboard" replace />;
   }
 
   return (
