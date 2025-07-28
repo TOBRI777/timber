@@ -8,6 +8,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import LoginEmployee from "./pages/LoginEmployee";
+import LoginAdmin from "./pages/LoginAdmin";
 
 const queryClient = new QueryClient();
 
@@ -51,7 +53,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<LoginEmployee />} />
+            <Route path="/admin" element={<LoginAdmin />} />
             <Route
               path="/employee"
               element={
